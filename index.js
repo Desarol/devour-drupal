@@ -6,7 +6,7 @@
  * JSON.
  * 
  * Devour's API provides a lot of JSON:API specific serialization and request
- * generation out of the box which the Drupal community can build on top of
+ * generation out of the box which the Drupal community can build on top of to
  * the extend and streamline usage of the JSON:API module.
  */
 
