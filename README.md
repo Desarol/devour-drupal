@@ -4,7 +4,7 @@
 [![version](https://img.shields.io/npm/v/devour-drupal.svg)]()
 
 ### Roadmap
-- [ ] Integrate a schema definition so that models can be defined automatically
+- [x] Integrate a schema definition so that models can be defined automatically
 - [ ] Add support for common use-cases (ie. file uploads)
 
 ### Modules exporting model schemas
