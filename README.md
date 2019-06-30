@@ -11,3 +11,4 @@
 
 ## Roadmap
 - [x] Integrate a schema definition so that models can be defined automatically
+- [x] Provide a way to define required fields on models

@@ -54,6 +54,8 @@ function DevourDrupal({ logger = true } = {}) {
               const definition = response.data.definitions[key]
               const attributes = definition.properties.data.properties.attributes
               const relationships = definition.properties.data.properties.relationships
+              const requiredAttributes = definition.properties.data.properties.attributes.required || []
+              const requiredRelationships = definition.properties.data.properties.relationships.required || []
 
               this.devour.define(key, {
                 ...Object.keys(attributes.properties)
@@ -97,18 +99,27 @@ function DevourDrupal({ logger = true } = {}) {
                           relationshipModel = relationship.properties.data.properties.type.enum
                         }
 
-                        return {
-                          key,
-                          value: {
-                            jsonApi: relationshipType === 'array' ? 'hasMany' : 'hasOne',
-                            type: relationshipModel
+                        if (relationshipModel) {
+                          return {
+                            key,
+                            value: {
+                              jsonApi: relationshipType === 'array' ? 'hasMany' : 'hasOne',
+                              type: relationshipModel.length === 1 ? relationshipModel[0] : undefined,
+                              types: relationshipModel.length === 1 ? undefined : relationshipModel
+                            }
                           }
                         }
                       })
+                      .filter(item => !!item)
                       .reduce((prev, curr) => {
                         prev[curr.key] = curr.value
                         return prev
                       }, {}),
+              }, {
+                required: {
+                  attributes: requiredAttributes,
+                  relationships: requiredRelationships
+                }
               })
             } catch (err) {
               console.error(`Failed to define model for ${key}`, err)
