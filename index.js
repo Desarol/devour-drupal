@@ -18,26 +18,6 @@ function DevourDrupal({ logger = true } = {}) {
   
   this.devour = new JsonApi({ logger, pluralize: false })
 
-  /**
-   * Devour assumes resources are locatable at their direct path:
-   * 
-   * ie.
-   *  - default devour: /jsonapi/node--article
-   *  - drupal resource: /jsonapi/node/article
-   * 
-   * We have to transform this URL such that it correctly finds the
-   * Drupal resources. This middleware replaces "[entity_type]--[entity_bundle]"
-   * with "[entity_type]/[entity_bundle]" in the URL.
-   */
-  this.devour.insertMiddlewareBefore('axios-request', {
-    name: 'drupalize-url',
-    req: (payload) => {
-      const modelParts = payload.req.model.split('--')
-      payload.req.url = payload.req.url.replace(payload.req.model, `${modelParts[0]}/${modelParts[1]}`)
-      return payload
-    }
-  })
-
   this.addBearer = function (token) {
     this.devour.headers['Authorization'] = `Bearer ${token}`
   }
@@ -51,6 +31,7 @@ function DevourDrupal({ logger = true } = {}) {
         Object.keys(response.data.definitions)
           .map(key => {
             try {
+              const modelParts = key.split('--')
               const definition = response.data.definitions[key]
               const attributes = definition.properties.data.properties.attributes
               const relationships = definition.properties.data.properties.relationships
@@ -116,6 +97,7 @@ function DevourDrupal({ logger = true } = {}) {
                         return prev
                       }, {}),
               }, {
+                collectionPath: `${modelParts[0]}/${modelParts[1]}`,
                 required: {
                   attributes: requiredAttributes,
                   relationships: requiredRelationships
