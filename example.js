@@ -1,9 +1,9 @@
 const DevourDrupal = require('devour-drupal')
 
 const getClient = async () => {
-  const client = new DevourDrupal({ baseUrl: 'https://dev-example.pantheonsite.io' })
-  await client.init('https://dev-example.pantheonsite.io/openapi/jsonapi?_format=json')
+  const client = new DevourDrupal({ logger: false })
   client.addBearer('EXAMPLE_BEARER_TOKEN')
+  await client.init('https://dev-example.pantheonsite.io/openapi/jsonapi?_format=json')
   return client
 }
 

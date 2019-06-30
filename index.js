@@ -12,18 +12,11 @@
 
 const JsonApi = require('devour-client')
 
-function DevourDrupal({
-  baseUrl,
-  jsonApi = '/jsonapi',
-  logger = true,
-}) {
-  this.baseUrl = baseUrl
-  this.jsonApi = jsonApi
-  this.devour = new JsonApi({
-    logger,
-    apiUrl: `${baseUrl}${jsonApi}`,
-    pluralize: false,
-  })
+const httpProtocol = () => typeof window !== 'undefined' ? window.location.protocol : 'https:'
+
+function DevourDrupal({ logger = true } = {}) {
+  
+  this.devour = new JsonApi({ logger, pluralize: false })
 
   /**
    * Devour assumes resources are locatable at their direct path:
@@ -53,6 +46,8 @@ function DevourDrupal({
     return this.devour.axios
       .get(openApi)
       .then(response => {
+        this.devour.apiUrl = `${httpProtocol()}//${response.data.host}${response.data.basePath}`
+
         Object.keys(response.data.definitions)
           .map(key => {
             try {

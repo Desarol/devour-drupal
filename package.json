@@ -1,6 +1,6 @@
 {
   "name": "devour-drupal",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Making Drupal accessible via the JSON:API module.",
   "main": "index.js",
   "scripts": {
