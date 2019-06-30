@@ -59,35 +59,6 @@ function DevourDrupal({
               const definition = response.data.definitions[key]
               const attributes = definition.properties.data.properties.attributes
               const relationships = definition.properties.data.properties.relationships
-              let relationshipProperties = {}
-              try {
-                relationshipProperties = (
-                  Object.keys(relationships.properties)
-                  .map(key => {
-                    const relationship = relationships.properties[key]
-                    const relationshipType = relationship.properties.data.type
-                    let relationshipModel
-
-                    if (relationshipType === 'array') {
-                      relationshipModel = relationship.properties.data.items.properties.type.enum
-                    } else {
-                      relationshipModel = relationship.properties.data.properties.type.enum
-                    }
-
-                    return {
-                      key,
-                      value: {
-                        jsonApi: relationshipType === 'array' ? 'hasMany' : 'hasOne',
-                        type: relationshipModel
-                      }
-                    }
-                  })
-                  .reduce((prev, curr) => {
-                    prev[curr.key] = curr.value
-                    return prev
-                  }, {})
-                )
-              } catch (err) { console.error(err) }
 
               this.devour.define(key, {
                 ...Object.keys(attributes.properties)
@@ -119,7 +90,30 @@ function DevourDrupal({
                         prev[curr.key] = type
                         return prev
                       }, {}),
-                ...relationshipProperties,
+                ...Object.keys(relationships.properties)
+                      .map(key => {
+                        const relationship = relationships.properties[key]
+                        const relationshipType = relationship.properties.data.type
+                        let relationshipModel
+
+                        if (relationshipType === 'array') {
+                          relationshipModel = relationship.properties.data.items.properties.type.enum
+                        } else {
+                          relationshipModel = relationship.properties.data.properties.type.enum
+                        }
+
+                        return {
+                          key,
+                          value: {
+                            jsonApi: relationshipType === 'array' ? 'hasMany' : 'hasOne',
+                            type: relationshipModel
+                          }
+                        }
+                      })
+                      .reduce((prev, curr) => {
+                        prev[curr.key] = curr.value
+                        return prev
+                      }, {}),
               })
             } catch (err) {
               console.error(`Failed to define model for ${key}`, err)

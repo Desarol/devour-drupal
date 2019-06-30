@@ -9,7 +9,7 @@ const getClient = async () => {
 
 const useClient = async () => {
   const client = await getClient()
-  const { data } = await client.findAll('node--article', { include: 'uid' })
+  const { data } = await client.devour.findAll('node--article', { include: 'uid' })
   console.log(data)
 }
 
